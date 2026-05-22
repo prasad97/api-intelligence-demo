@@ -1,0 +1,268 @@
+{
+  "info": {
+    "_postman_id": "1c8db315-4f7e-46eb-9ea4-2053e09cdfc2",
+    "name": "AI Agent Evals",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "10675726"
+  },
+  "item": [
+    {
+      "name": "Post count",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const body = pm.response.json();",
+              "const answer = (body.message || body.response ||",
+              "    body.content || JSON.stringify(body)).toLowerCase();",
+              "",
+              "pm.test(\"Mentions correct count — 100 posts\", () => {",
+              "    pm.expect(answer).to.satisfy(a =>",
+              "        a.includes(\"100\") || a.includes(\"one hundred\"),",
+              "        \"Expected agent to say there are 100 posts\"",
+              "    );",
+              "});",
+              "",
+              "pm.test(\"Response within 5 seconds\", () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": \"eval-user\",\n  \"session_id\": \"{{session_id}}\",\n  \"message\": \"How many posts exist in total in this API?\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Resource inventory",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const body = pm.response.json();",
+              "const answer = (body.message || body.response ||",
+              "    body.content || JSON.stringify(body)).toLowerCase();",
+              "",
+              "pm.test(\"Mentions posts\", () => {",
+              "    pm.expect(answer).to.include(\"post\");",
+              "});",
+              "",
+              "pm.test(\"Mentions users\", () => {",
+              "    pm.expect(answer).to.include(\"user\");",
+              "});",
+              "",
+              "pm.test(\"Mentions todos or tasks\", () => {",
+              "    pm.expect(answer).to.satisfy(a =>",
+              "        a.includes(\"todo\") || a.includes(\"task\"),",
+              "        \"Expected agent to mention todos\"",
+              "    );",
+              "});",
+              "",
+              "pm.test(\"Does not invent fake resources\", () => {",
+              "    pm.expect(answer).to.not.include(\"product\");",
+              "    pm.expect(answer).to.not.include(\"order\");",
+              "    pm.expect(answer).to.not.include(\"cart\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": \"eval-user\",\n  \"session_id\": \"{{session_id}}\",\n  \"message\": \"What resources or endpoints does this API provide?\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Test coverage gaps",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const body = pm.response.json();",
+              "const answer = (body.message || body.response ||",
+              "    body.content || JSON.stringify(body)).toLowerCase();",
+              "",
+              "pm.test(\"Identifies POST /posts as untested\", () => {",
+              "    pm.expect(answer).to.satisfy(a =>",
+              "        a.includes(\"post\") && (a.includes(\"creat\") || a.includes(\"untested\") || a.includes(\"no test\") || a.includes(\"coverage\")),",
+              "        \"Expected mention of POST /posts missing tests\"",
+              "    );",
+              "});",
+              "",
+              "pm.test(\"Identifies comments or todos as untested\", () => {",
+              "    pm.expect(answer).to.satisfy(a =>",
+              "        a.includes(\"comment\") || a.includes(\"todo\"),",
+              "        \"Expected mention of comments or todos missing tests\"",
+              "    );",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": \"eval-user\",\n  \"session_id\": \"{{session_id}}\",\n  \"message\": \"Which endpoints in this API have no test coverage?\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Security risks",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const body = pm.response.json();",
+              "const answer = (body.message || body.response ||",
+              "    body.content || JSON.stringify(body)).toLowerCase();",
+              "",
+              "pm.test(\"Mentions authentication or auth gap\", () => {",
+              "    pm.expect(answer).to.satisfy(a =>",
+              "        a.includes(\"auth\") || a.includes(\"no authentication\") ||",
+              "        a.includes(\"unauthenticated\") || a.includes(\"public\"),",
+              "        \"Expected mention of missing authentication\"",
+              "    );",
+              "});",
+              "",
+              "pm.test(\"Mentions PII or sensitive data exposure\", () => {",
+              "    pm.expect(answer).to.satisfy(a =>",
+              "        a.includes(\"pii\") || a.includes(\"email\") ||",
+              "        a.includes(\"sensitive\") || a.includes(\"personal\") ||",
+              "        a.includes(\"privacy\") || a.includes(\"exposed\"),",
+              "        \"Expected mention of PII/data exposure\"",
+              "    );",
+              "});",
+              "",
+              "pm.test(\"Response is substantive — more than 20 words\", () => {",
+              "    const wordCount = answer.split(/\\s+/).length;",
+              "    pm.expect(wordCount).to.be.greaterThan(20);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": \"eval-user\",\n  \"session_id\": \"{{session_id}}\",\n  \"message\": \"What are the top security risks or concerns with this API?\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "User count",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const body = pm.response.json();",
+              "const answer = (body.message || body.response ||",
+              "    body.content || JSON.stringify(body)).toLowerCase();",
+              "",
+              "pm.test(\"Mentions correct user count — 10\", () => {",
+              "    pm.expect(answer).to.satisfy(a =>",
+              "        a.includes(\"10\") || a.includes(\"ten\"),",
+              "        \"Expected agent to say there are 10 users\"",
+              "    );",
+              "});",
+              "",
+              "pm.test(\"Does not say there are no users\", () => {",
+              "    pm.expect(answer).to.not.satisfy(a =>",
+              "        a.includes(\"no user\") || a.includes(\"0 user\") ||",
+              "        a.includes(\"zero user\"),",
+              "        \"Agent incorrectly said there are no users\"",
+              "    );",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": \"eval-user\",\n  \"session_id\": \"{{session_id}}\",\n  \"message\": \"How many users are registered in this API?\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    }
+  ]
+}
