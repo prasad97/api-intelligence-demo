@@ -1,0 +1,592 @@
+{
+  "info": {
+    "_postman_id": "59799b4a-bb43-4541-8179-d129838ddf9c",
+    "name": "JSONPlaceholder Blog API",
+    "description": "A free, reliable fake REST API for prototyping and demos.\nServes ~3 billion requests per month. No auth required. No Cloudflare blocking.\nBase URL: https://jsonplaceholder.typicode.com\n\nResources:\n- 100 posts (blog articles with title, body, userId)\n- 500 comments (linked to posts)\n- 200 todos (tasks with completion status)\n- 10 users (with name, email, address, company)\n\nThis is a READ-ONLY demo API. POST/PUT/DELETE calls are faked —\nthey return success but nothing is actually saved to the database.\n",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "10675726"
+  },
+  "item": [
+    {
+      "name": "posts",
+      "item": [
+        {
+          "name": "{id}",
+          "item": [
+            {
+              "name": "comments",
+              "item": [
+                {
+                  "name": "Get comments for a post",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{baseUrl}}/posts/:id/comments",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "posts",
+                        ":id",
+                        "comments"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "1"
+                        }
+                      ]
+                    },
+                    "description": "Returns all comments belonging to a specific post.\nEach comment has: id, postId, name, email, body.\nAverage of 5 comments per post (500 total across 100 posts).\nNo authentication required.\nEquivalent to GET /comments?postId={id}\nNo test coverage exists for this nested route.\nKnown gap: no way to add a comment via this nested route — must POST to /comments.\n"
+                  },
+                  "response": [
+                    {
+                      "name": "Array of comment objects for the post",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{baseUrl}}/posts/:id/comments",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "posts",
+                            ":id",
+                            "comments"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "1"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "text",
+                      "header": [],
+                      "cookie": [],
+                      "body": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Get a single post by ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/posts/:id",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "posts",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                },
+                "description": "Returns a single post by numeric ID (valid range: 1–100).\nReturns empty object {} for IDs outside this range — not a 404.\nThis is a known API quirk — missing resources should return 404.\nNo authentication required. Response time under 100ms.\nTest coverage exists for status 200 but not for out-of-range IDs.\n"
+              },
+              "response": [
+                {
+                  "name": "Single post object",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/posts/:id",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "posts",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "1"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"id\": 1,\n  \"userId\": 1,\n  \"title\": \"sunt aut facere repellat provident occaecati\",\n  \"body\": \"quia et suscipit suscipit recusandae\"\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Get all posts",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Returns 100 posts\", () => {",
+                  "    pm.expect(pm.response.json().length).to.equal(100);",
+                  "});",
+                  "pm.test(\"Each post has title and body\", () => {",
+                  "    const posts = pm.response.json();",
+                  "    pm.expect(posts[0]).to.have.property('title');",
+                  "    pm.expect(posts[0]).to.have.property('body');",
+                  "});",
+                  "pm.test(\"Response under 2000ms\", () => {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/posts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts"
+              ]
+            },
+            "description": "Returns all 100 blog posts. Each post has: id, title, body, userId.\nSupports filtering by userId via query param: /posts?userId=1\nReturns posts for that specific user only when filtered.\nNo authentication required. Highly reliable — no rate limiting.\nAverage response time: under 200ms. Always returns status 200.\n100 posts exist in total, spread across 10 users (10 posts per user).\nNo pagination built in — always returns the full filtered set.\nKnown gap: no search by title or body content. No sorting support.\nNo test coverage exists for the userId filter edge cases.\n"
+          },
+          "response": [
+            {
+              "name": "Array of post objects",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/posts?userId=4662",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "posts"
+                  ],
+                  "query": [
+                    {
+                      "description": "Filter posts by user ID (1–10)",
+                      "key": "userId",
+                      "value": "4662"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": 1,\n    \"userId\": 1,\n    \"title\": \"sunt aut facere repellat provident occaecati\",\n    \"body\": \"quia et suscipit suscipit recusandae\"\n  },\n  {\n    \"id\": 1,\n    \"userId\": 1,\n    \"title\": \"sunt aut facere repellat provident occaecati\",\n    \"body\": \"quia et suscipit suscipit recusandae\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Create a new post",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Test post from demo\",\n  \"body\": \"This is a demo post\",\n  \"userId\": 1\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/posts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts"
+              ]
+            },
+            "description": "Creates a new post. Required fields: title, body, userId.\nIMPORTANT: Data is NOT persisted. Always returns a fake id of 101.\nNo input validation — missing fields still return 201.\nNo authentication required — anyone can create posts.\nNo test coverage exists for this endpoint.\nSecurity gap: no ownership check, no rate limiting on writes.\n"
+          },
+          "response": [
+            {
+              "name": "Created post object with fake id 101",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"My new post\",\n  \"body\": \"Post content goes here\",\n  \"userId\": 1\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/posts",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "posts"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "comments",
+      "item": [
+        {
+          "name": "Get all comments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/comments?postId=4662",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "comments"
+              ],
+              "query": [
+                {
+                  "key": "postId",
+                  "value": "4662",
+                  "description": "Filter comments by post ID"
+                }
+              ]
+            },
+            "description": "Returns all 500 comments. Supports filtering by postId.\nEach comment includes the commenter's email — PII concern.\nEmails are fake but the pattern represents a real data exposure risk.\nNo authentication required to access all commenter emails.\nNo test coverage for the postId filter.\nNo pagination — returns all 500 at once which is a performance concern.\nKnown gap: no ability to filter by email or commenter name.\n"
+          },
+          "response": [
+            {
+              "name": "Array of comment objects",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/comments?postId=4662",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "comments"
+                  ],
+                  "query": [
+                    {
+                      "description": "Filter comments by post ID",
+                      "key": "postId",
+                      "value": "4662"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "todos",
+      "item": [
+        {
+          "name": "Get all todos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/todos?userId=4662&completed=true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "todos"
+              ],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "4662"
+                },
+                {
+                  "key": "completed",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Returns all 200 todo items. Each todo has: id, userId, title, completed (boolean).\nSupports filtering by userId and completed status via query params.\nExample: /todos?userId=1&completed=false\nNo authentication required — all users' todos are publicly accessible.\nSecurity risk: task data from all users exposed without any auth.\nNo test coverage for filter combinations.\nUseful for demonstrating boolean filtering and task management APIs.\n200 todos total — 20 per user, mix of completed and incomplete.\n"
+          },
+          "response": [
+            {
+              "name": "Array of todo objects",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/todos?userId=4662&completed=true",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "todos"
+                  ],
+                  "query": [
+                    {
+                      "key": "userId",
+                      "value": "4662"
+                    },
+                    {
+                      "key": "completed",
+                      "value": "true"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "users",
+      "item": [
+        {
+          "name": "{id}",
+          "item": [
+            {
+              "name": "Get a single user by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/users/:id",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "users",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                },
+                "description": "Returns a single user's full profile by ID (valid range: 1–10).\nSame PII exposure concern as GET /users.\nNo authentication required to read any user's data.\nReturns empty object {} for IDs outside 1–10 (should be 404).\nNested routes available: /users/{id}/posts, /users/{id}/todos, /users/{id}/albums\n"
+              },
+              "response": [
+                {
+                  "name": "Single user object",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{baseUrl}}/users/:id",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "users",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "1"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "body": ""
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Get all users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Returns exactly 10 users\", () => {",
+                  "    pm.expect(pm.response.json().length).to.equal(10);",
+                  "});",
+                  "pm.test(\"Users have email field\", () => {",
+                  "    const users = pm.response.json();",
+                  "    pm.expect(users[0]).to.have.property('email');",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users"
+              ]
+            },
+            "description": "Returns all 10 users with full profile data including:\nname, username, email, phone, website, address (with geo coordinates), company.\nNo authentication required — full PII exposed publicly.\nGeo coordinates (lat/lng) are included — location data exposure.\nCompany data included — could be sensitive in a real system.\nNo pagination — always returns all 10 users.\nNo test coverage for schema validation on the response.\nThis endpoint would fail a basic security audit in a real application.\nKnown gap: no ability to filter by name, email, or company.\n"
+          },
+          "response": [
+            {
+              "name": "Array of user objects with full PII",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/users",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "users"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": 5979,\n    \"name\": \"string\",\n    \"username\": \"string\",\n    \"email\": \"string\",\n    \"phone\": \"string\",\n    \"website\": \"string\",\n    \"address\": {\n      \"street\": \"string\",\n      \"city\": \"string\",\n      \"zipcode\": \"string\",\n      \"geo\": {\n        \"lat\": \"string\",\n        \"lng\": \"string\"\n      }\n    },\n    \"company\": {\n      \"name\": \"string\",\n      \"catchPhrase\": \"string\"\n    }\n  },\n  {\n    \"id\": 2305,\n    \"name\": \"string\",\n    \"username\": \"string\",\n    \"email\": \"string\",\n    \"phone\": \"string\",\n    \"website\": \"string\",\n    \"address\": {\n      \"street\": \"string\",\n      \"city\": \"string\",\n      \"zipcode\": \"string\",\n      \"geo\": {\n        \"lat\": \"string\",\n        \"lng\": \"string\"\n      }\n    },\n    \"company\": {\n      \"name\": \"string\",\n      \"catchPhrase\": \"string\"\n    }\n  }\n]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "New Request",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://jsonplaceholder.typicode.com"
+    }
+  ]
+}
